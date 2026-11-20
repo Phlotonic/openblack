@@ -146,9 +146,43 @@ void Gui::SetScale(float scale) noexcept
 	ImGui::GetStyle() = style;
 }
 
+void Gui::ClearInputs() noexcept
+{
+	ImGui::SetCurrentContext(_imgui);
+	auto& io = ImGui::GetIO();
+	io.ClearEventsQueue();
+	io.ClearInputKeys();
+	io.ClearInputMouse();
+}
+
 bool Gui::ProcessEvents(const SDL_Event& event) noexcept
 {
 	ImGui::SetCurrentContext(_imgui);
+
+	auto& config = Locator::config::value();
+	if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat && event.key.key == SDLK_F10 &&
+	    (event.key.mod & (SDL_KMOD_CTRL | SDL_KMOD_ALT | SDL_KMOD_GUI)) == 0)
+	{
+		config.drawGui = !config.drawGui;
+		if (!config.drawGui)
+		{
+			ClearInputs();
+			_wasDrawing = false;
+			_stealsFocus = false;
+		}
+		return true;
+	}
+
+	if (!config.drawGui)
+	{
+		if (_wasDrawing)
+		{
+			ClearInputs();
+			_wasDrawing = false;
+		}
+		_stealsFocus = false;
+		return false;
+	}
 
 	for (auto& window : _debugWindows)
 	{
@@ -193,6 +227,18 @@ void Gui::NewFrame() noexcept
 
 bool Gui::Loop() noexcept
 {
+	if (!Locator::config::value().drawGui)
+	{
+		if (_wasDrawing)
+		{
+			ClearInputs();
+			_wasDrawing = false;
+		}
+		_stealsFocus = false;
+		return false;
+	}
+	_wasDrawing = true;
+
 	for (auto& window : _debugWindows)
 	{
 		window->WindowUpdate();
@@ -217,9 +263,18 @@ bool Gui::Loop() noexcept
 
 void Gui::Draw(SDL_GPUCommandBuffer* cmdBuf, SDL_GPUTexture* targetTexture) noexcept
 {
+	if (!Locator::config::value().drawGui)
+	{
+		return;
+	}
+
 	ImGui::SetCurrentContext(_imgui);
 
 	ImDrawData* drawData = ImGui::GetDrawData();
+	if (drawData == nullptr)
+	{
+		return;
+	}
 	const bool isMinimized = (drawData->DisplaySize.x <= 0.0f || drawData->DisplaySize.y <= 0.0f);
 
 	if (targetTexture != nullptr && !isMinimized)
@@ -345,6 +400,7 @@ bool Gui::ShowMenu() noexcept
 
 			if (ImGui::BeginMenu("View"))
 			{
+				ImGui::MenuItem("Debug GUI", "F10", &config.drawGui);
 				ImGui::Checkbox("Game Detail Overlay", &config.viewDetailOverlay);
 				ImGui::Checkbox("Sky", &config.drawSky);
 				ImGui::Checkbox("Water", &config.drawWater);

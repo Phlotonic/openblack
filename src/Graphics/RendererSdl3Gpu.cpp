@@ -733,8 +733,11 @@ void RendererSdl3Gpu::DrawScene(const DrawSceneDesc& drawDesc) noexcept
 
 	if (!capture)
 	{
-		auto section = profiler.BeginScoped(Profiler::Stage::GuiDraw);
-		Locator::debugGui::value().Draw(cmdBufferMain, swapchainTexture);
+		if (drawDesc.drawGui)
+		{
+			auto section = profiler.BeginScoped(Profiler::Stage::GuiDraw);
+			Locator::debugGui::value().Draw(cmdBufferMain, swapchainTexture);
+		}
 		if (!SDL_SubmitGPUCommandBuffer(cmdBufferMain))
 		{
 			SPDLOG_LOGGER_ERROR(spdlog::get("graphics"), "Failed to submit frame: {}", SDL_GetError());

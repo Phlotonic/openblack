@@ -64,6 +64,7 @@ public:
 		bool drawBoundingBoxes;
 		bool drawFootpaths;
 		bool drawStreams;
+		bool drawGui {true};
 		bool cullBack;
 	};
 

@@ -64,6 +64,7 @@ struct Arguments
 	std::array<spdlog::level::level_enum, k_LoggingSubsystemStrs.size()> logLevels;
 	std::string startLevel;
 	std::optional<std::pair</* frame number */ uint32_t, /* output */ std::filesystem::path>> requestScreenshot;
+	bool drawGui {true};
 };
 
 class Game

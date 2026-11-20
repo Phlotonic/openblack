@@ -114,6 +114,7 @@ Game::Game(Arguments&& args) noexcept
 	config.graphicsBackend = args.graphicsBackend;
 	config.vsync = args.vsync;
 	config.guiScale = args.guiScale;
+	config.drawGui = args.drawGui;
 }
 
 Game::~Game() noexcept
@@ -859,6 +860,7 @@ bool Game::Run() noexcept
 			    .drawBoundingBoxes = config.drawBoundingBoxes,
 			    .drawFootpaths = config.drawFootpaths,
 			    .drawStreams = config.drawStreams,
+			    .drawGui = config.drawGui,
 			    .cullBack = false,
 			};
 			if (_requestScreenshot && _requestScreenshot->first <= _frameCount)

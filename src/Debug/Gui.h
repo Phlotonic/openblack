@@ -41,6 +41,7 @@ public:
 	void Draw(SDL_GPUCommandBuffer* cmdBuf, SDL_GPUTexture* targetTexture) noexcept override;
 
 private:
+	void ClearInputs() noexcept;
 	void NewFrame() noexcept;
 
 	void RenderArrow(const std::string& name, const ImVec2& pos, const ImVec2& size) const noexcept;
@@ -57,6 +58,7 @@ private:
 	std::vector<std::unique_ptr<Window>> _debugWindows;
 	std::string _screenshotFilename = "screenshot.png";
 	bool _stealsFocus = false;
+	bool _wasDrawing = true;
 	float _scale = 1.0f;
 	float _dpiScale = 1.0f;
 };

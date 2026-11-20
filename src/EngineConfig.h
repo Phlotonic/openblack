@@ -39,6 +39,7 @@ struct EngineConfig
 	bool debugVillagerStates {false};
 
 	bool viewDetailOverlay {false};
+	bool drawGui {true};
 	bool drawSky {true};
 	bool drawWater {true};
 	bool drawIsland {true};
